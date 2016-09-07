@@ -1,0 +1,55 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>bin</id>
+	<formats>
+		<!--打包格式-->
+		<format>tar.gz</format>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<files>
+		<file>
+			<source>src/main/resources/dubboProp.properties</source>
+			<outputDirectory>conf</outputDirectory>
+			<destName>dubbo.properties</destName>
+			<filtered>true</filtered>
+		</file>
+	</files>
+	<fileSets>
+		<fileSet>
+			<directory>src/main/resources/bin</directory>
+			<outputDirectory>bin</outputDirectory>
+			<includes>
+				<include>*.bat</include>
+				<include>*.sh</include>
+			</includes>
+			<fileMode>751</fileMode>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources</directory>
+			<outputDirectory>conf</outputDirectory>
+			<includes>
+				<include>redis.properties</include>
+				<include>log4j.properties</include>
+			</includes>
+			<filtered>true</filtered>
+		</fileSet>			
+		<fileSet>
+			<directory>src/main/resources/config</directory>
+			<outputDirectory>conf/META-INF/spring</outputDirectory>
+			<includes>
+				<include>*.*</include>
+			</includes>
+			<filtered>true</filtered>
+			<!-- 使用filtered可能导致中文乱码，设置encoding为UTF-8也没能成功处理 -->
+		</fileSet>	
+	</fileSets>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+</assembly>
