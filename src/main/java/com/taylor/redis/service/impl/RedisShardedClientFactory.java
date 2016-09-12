@@ -68,6 +68,7 @@ public class RedisShardedClientFactory implements RedisClientFactory {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+
 		groups = new ArrayList<RedisMasterSlaverGroup>();
 		// initialize RedisMasterSlaverGroup list;
 		if (CollectionUtils.isEmpty(shardInfos))
@@ -85,7 +86,6 @@ public class RedisShardedClientFactory implements RedisClientFactory {
 			RedisMasterSlaverGroup group = null;
 
 			if (groupMap.get(groupId) == null) {
-
 				group = new RedisMasterSlaverGroup();
 				group.setId(groupId);
 				groupMap.put(groupId, group);
@@ -110,9 +110,7 @@ public class RedisShardedClientFactory implements RedisClientFactory {
 			for (Future<RedisMasterSlaverGroup> future : probeResult) {
 				groups.add(future.get());
 			}
-
 			createClient(groups);
-
 		} catch (Throwable e) {
 			throw new CommonRuntimeException("Initialize redis shard group failed", e);
 		} finally {
