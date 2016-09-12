@@ -47,7 +47,7 @@ public class RedisClientDemo implements Serializable {
 
 	public static RedisClient getClient() {
 		RedisClient client = new RedisClient();
-		client.setHost("115.159.53.124");
+		client.setHost("192.168.186.129");
 		client.setInstanceId("e0879b32-5e36-4b3e-879c-d364568773ee");
 		// client.setPassword("1q2w3e4r5A");
 		client.setPort(6379);
