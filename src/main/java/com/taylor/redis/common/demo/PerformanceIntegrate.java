@@ -58,7 +58,6 @@ public class PerformanceIntegrate {
 		shards.add(shard);
 
 		RedisShardedClientFactory factory = new RedisShardedClientFactory();
-		factory.setMaxActive(200);
 		factory.setShardInfos(shards);
 		factory.afterPropertiesSet();
 
