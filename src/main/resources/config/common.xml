@@ -26,6 +26,11 @@
 					<property name="port" value="${redis.1.1.port}"></property>
 					<property name="groupId" value="1"></property>
 				</bean>
+				<bean class="com.taylor.redis.common.shard.RedisShardInfo">
+					<property name="host" value="${redis.1.2.host}"></property>
+					<property name="port" value="${redis.1.2.port}"></property>
+					<property name="groupId" value="1"></property>
+				</bean>
 			</list>
 		</property>
 	</bean>

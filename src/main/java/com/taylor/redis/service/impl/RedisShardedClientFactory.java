@@ -29,6 +29,33 @@ import redis.clients.jedis.Protocol;
 
 @Data
 public class RedisShardedClientFactory implements RedisClientFactory {
+	private int timeout = Protocol.DEFAULT_TIMEOUT;
+
+	private int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
+
+	private long maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
+
+	private boolean testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
+
+	private int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
+
+	private int maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
+
+	private boolean testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
+
+	private boolean testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
+
+	private long timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+
+	private int numTestsPerEvictionRun = GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+
+	private long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+
+	private long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+
+	private boolean lifo = GenericObjectPool.DEFAULT_LIFO;
+
+	private byte whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
 
 	private List<RedisShardInfo> shardInfos;
 
@@ -52,7 +79,7 @@ public class RedisShardedClientFactory implements RedisClientFactory {
 
 		for (RedisShardInfo shard : shardInfos) {
 
-			shard.setTimeout(PoolConfig.timeout);
+			shard.setTimeout(this.timeout);
 
 			Integer groupId = shard.getGroupId();
 
@@ -72,6 +99,7 @@ public class RedisShardedClientFactory implements RedisClientFactory {
 		try {
 			ConcurrentLinkedQueue<Future<RedisMasterSlaverGroup>> probeResult = new ConcurrentLinkedQueue<Future<RedisMasterSlaverGroup>>();
 			for (Entry<Integer, RedisMasterSlaverGroup> entry : groupMap.entrySet()) {
+				/* 选出含有master的组 */
 				if (entry.getValue() != null && null != entry.getValue()) {
 					Prober probeTask = new RedisMasterProber.Prober(entry.getValue(), entry.getKey());
 					probeResult.add(excutor.submit(probeTask));
@@ -93,19 +121,19 @@ public class RedisShardedClientFactory implements RedisClientFactory {
 	private void createClient(List<RedisMasterSlaverGroup> groups) {
 
 		GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-		if (PoolConfig.maxIdle >= 0) {
-			poolConfig.setMaxIdle(PoolConfig.maxIdle);
+		if (this.maxIdle >= 0) {
+			poolConfig.setMaxIdle(this.maxIdle);
 		}
-		poolConfig.setMaxWaitMillis(PoolConfig.maxWait);
-		poolConfig.setTestOnBorrow(PoolConfig.testOnBorrow);
-		poolConfig.setMinIdle(PoolConfig.minIdle);
-		poolConfig.setTestOnReturn(PoolConfig.testOnReturn);
-		poolConfig.setTestWhileIdle(PoolConfig.testWhileIdle);
-		poolConfig.setTimeBetweenEvictionRunsMillis(PoolConfig.timeBetweenEvictionRunsMillis);
-		poolConfig.setNumTestsPerEvictionRun(PoolConfig.numTestsPerEvictionRun);
-		poolConfig.setMinEvictableIdleTimeMillis(PoolConfig.minEvictableIdleTimeMillis);
-		poolConfig.setSoftMinEvictableIdleTimeMillis(PoolConfig.softMinEvictableIdleTimeMillis);
-		poolConfig.setLifo(PoolConfig.lifo);
+		poolConfig.setMaxWaitMillis(this.maxWait);
+		poolConfig.setTestOnBorrow(this.testOnBorrow);
+		poolConfig.setMinIdle(this.minIdle);
+		poolConfig.setTestOnReturn(this.testOnReturn);
+		poolConfig.setTestWhileIdle(this.testWhileIdle);
+		poolConfig.setTimeBetweenEvictionRunsMillis(this.timeBetweenEvictionRunsMillis);
+		poolConfig.setNumTestsPerEvictionRun(this.numTestsPerEvictionRun);
+		poolConfig.setMinEvictableIdleTimeMillis(this.minEvictableIdleTimeMillis);
+		poolConfig.setSoftMinEvictableIdleTimeMillis(this.softMinEvictableIdleTimeMillis);
+		poolConfig.setLifo(this.lifo);
 
 		splitor = ShardSplit.getInstance(groups, poolConfig);
 		client = new RedisShardedClient(splitor);
@@ -127,35 +155,5 @@ public class RedisShardedClientFactory implements RedisClientFactory {
 
 	public boolean isSingleton() {
 		return true;
-	}
-
-	public static class PoolConfig {
-		public static int timeout = Protocol.DEFAULT_TIMEOUT;
-
-		public static int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
-
-		public static long maxWait = GenericObjectPool.DEFAULT_MAX_WAIT;
-
-		public static boolean testOnBorrow = GenericObjectPool.DEFAULT_TEST_ON_BORROW;
-
-		public static int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
-
-		public static int maxActive = GenericObjectPool.DEFAULT_MAX_ACTIVE;
-
-		public static boolean testOnReturn = GenericObjectPool.DEFAULT_TEST_ON_RETURN;
-
-		public static boolean testWhileIdle = GenericObjectPool.DEFAULT_TEST_WHILE_IDLE;
-
-		public static long timeBetweenEvictionRunsMillis = GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
-
-		public static int numTestsPerEvictionRun = GenericObjectPool.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
-
-		public static long minEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-
-		public static long softMinEvictableIdleTimeMillis = GenericObjectPool.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-
-		public static boolean lifo = GenericObjectPool.DEFAULT_LIFO;
-
-		public static byte whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
 	}
 }
