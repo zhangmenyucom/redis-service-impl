@@ -47,16 +47,17 @@ public class RedisTest {
 	}
 
 	public void delData() {
-		long count = jedis.del(key1);
+		 jedis.del(key1);
 
 		System.out.println("Get Data Key1 after it is deleted:" + jedis.get(key1));
 	}
 
 	public void testExpire() {
-		long count = jedis.expire(key2, 5);
+		jedis.expire(key2, 5);
 
 		try {
-			Thread.currentThread().sleep(6000);
+			Thread.currentThread();
+			Thread.sleep(6000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
